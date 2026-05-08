@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEX PAINTBALL — DOMINATE THE FIELD</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --cr:#DC143C;--cr2:#FF1040;--crg:rgba(220,20,60,0.18);
+  --bg:#030409;--glass:rgba(5,7,16,0.72);
+  --txt:#E8EAF2;--tdim:rgba(232,234,242,0.45);
+}
+html{scroll-behavior:auto;overflow-x:hidden}
+body{
+  background:var(--bg);color:var(--txt);
+  font-family:'Rajdhani',sans-serif;
+  overflow-x:hidden;cursor:crosshair;
+}
+#c3d{
+  position:fixed;top:0;left:0;width:100vw;height:100vh;
+  z-index:20;pointer-events:none;
+}
+.vig{
+  position:fixed;inset:0;z-index:15;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 40%,transparent 35%,rgba(3,4,9,0.75) 100%);
+}
+.scan{
+  position:fixed;inset:0;z-index:16;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);
+}
+#page{position:relative;z-index:1}
+.sec{position:relative;min-height:100vh;display:flex;align-items:center}
+
+/* HERO */
+#hero{
+  padding:0 8vw 10vh;align-items:flex-end;
+  background:transparent;overflow:hidden;
+}
+.hero-hud{
+  position:absolute;top:5vh;right:6vw;
+  font-family:'Orbitron',monospace;font-size:0.58rem;
+  letter-spacing:0.22em;color:rgba(220,20,60,0.45);
+  line-height:1.8;
+}
+.hero-hud span{color:rgba(220,20,60,0.7)}
+.hero-content{position:relative;z-index:5}
+.eyebrow{
+  font-family:'Orbitron',monospace;font-size:0.62rem;
+  letter-spacing:0.45em;color:var(--cr);
+  margin-bottom:1.4rem;opacity:0;
+  animation:fadeSlide 1s 0.3s ease forwards;
+}
+h1.htitle{
+  font-family:'Orbitron',monospace;
+  font-size:clamp(3.5rem,10vw,9.5rem);
+  font-weight:900;line-height:0.88;
+  letter-spacing:-0.025em;
+  background:linear-gradient(130deg,#fff 0%,#ffd0d8 35%,var(--cr) 80%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:1.2rem;
+  opacity:0;animation:fadeSlide 1s 0.5s ease forwards;
+}
+.hsub{
+  font-size:clamp(0.85rem,2.2vw,1.2rem);font-weight:300;
+  letter-spacing:0.38em;color:var(--tdim);
+  margin-bottom:3.5rem;
+  opacity:0;animation:fadeSlide 1s 0.7s ease forwards;
+}
+.scroll-cue{
+  display:flex;align-items:center;gap:1rem;
+  opacity:0;animation:fadeSlide 1s 0.9s ease forwards;
+}
+.scroll-cue span{
+  font-family:'Orbitron',monospace;font-size:0.6rem;
+  letter-spacing:0.3em;color:var(--cr);
+}
+.sline{
+  width:55px;height:1px;background:var(--cr);
+  position:relative;overflow:hidden;
+}
+.sline::after{
+  content:'';position:absolute;top:0;left:-100%;
+  width:100%;height:100%;background:#fff;
+  animation:scan 1.6s ease-in-out infinite;
+}
+@keyframes scan{to{left:120%}}
+@keyframes fadeSlide{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* SECTIONS */
+#s2{padding:0 8vw;justify-content:flex-start}
+#s3{padding:0 8vw;justify-content:flex-end}
+.gpanel{
+  background:var(--glass);
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border:0.5px solid rgba(220,20,60,0.18);
+  border-radius:2px;padding:3.5rem;
+  max-width:660px;position:relative;
+  opacity:0;transition:opacity 0.8s ease,transform 0.8s ease;
+  transform:translateY(30px);
+}
+.gpanel.vis{opacity:1;transform:translateY(0)}
+.gpanel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cr),transparent);
+}
+.gpanel::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(220,20,60,0.3),transparent);
+}
+.corner{
+  position:absolute;width:14px;height:14px;
+  border-color:var(--cr);border-style:solid;border-width:0;
+}
+.corner.tl{top:8px;left:8px;border-top-width:1.5px;border-left-width:1.5px}
+.corner.tr{top:8px;right:8px;border-top-width:1.5px;border-right-width:1.5px}
+.corner.bl{bottom:8px;left:8px;border-bottom-width:1.5px;border-left-width:1.5px}
+.corner.br{bottom:8px;right:8px;border-bottom-width:1.5px;border-right-width:1.5px}
+.stats{display:flex;gap:2.8rem;margin-bottom:2.5rem;flex-wrap:wrap}
+.stat .num{
+  font-family:'Orbitron',monospace;font-size:2.4rem;
+  font-weight:700;color:var(--cr);line-height:1;
+}
+.stat .lbl{
+  font-size:0.65rem;letter-spacing:0.22em;
+  color:var(--tdim);margin-top:0.28rem;
+}
+.stitle{
+  font-family:'Orbitron',monospace;
+  font-size:clamp(1.8rem,4.5vw,3.2rem);
+  font-weight:900;line-height:1.08;
+  margin-bottom:1.2rem;text-transform:uppercase;
+}
+.sbody{
+  font-size:1.05rem;font-weight:300;line-height:1.75;
+  color:var(--tdim);max-width:44ch;
+}
+.ctabtn{
+  display:inline-block;margin-top:2.2rem;
+  padding:0.9rem 2.4rem;
+  background:var(--cr);color:#fff;
+  font-family:'Orbitron',monospace;font-size:0.72rem;
+  font-weight:700;letter-spacing:0.22em;
+  text-transform:uppercase;border:none;cursor:pointer;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:filter 0.3s,transform 0.2s;
+  position:relative;overflow:hidden;
+}
+.ctabtn:hover{filter:brightness(1.2);transform:translateY(-2px)}
+
+/* FOOTER */
+#footer{
+  position:relative;min-height:85vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;background:var(--bg);
+  transition:background 1.4s ease;
+}
+#footer.xplode{background:#1a0005}
+.fcontent{text-align:center;position:relative;z-index:10}
+.flogo{
+  font-family:'Orbitron',monospace;
+  font-size:clamp(4rem,11vw,9rem);
+  font-weight:900;letter-spacing:0.18em;
+  color:rgba(255,255,255,0.06);
+  transition:color 1.2s ease,text-shadow 1.2s ease;
+}
+#footer.xplode .flogo{
+  color:rgba(255,255,255,0.92);
+  text-shadow:0 0 80px rgba(220,20,60,0.9),0 0 160px rgba(220,20,60,0.4);
+}
+.ftag{
+  font-family:'Orbitron',monospace;font-size:0.68rem;
+  letter-spacing:0.5em;color:var(--tdim);margin-top:0.8rem;
+  transition:color 0.6s ease;
+}
+#footer.xplode .ftag{color:rgba(255,255,255,0.7)}
+.flinks{display:flex;gap:2.5rem;margin-top:3.5rem;justify-content:center;flex-wrap:wrap}
+.flink{
+  font-size:0.72rem;letter-spacing:0.22em;
+  color:var(--tdim);text-decoration:none;
+  text-transform:uppercase;transition:color 0.3s;
+}
+.flink:hover{color:var(--cr)}
+.fcopy{margin-top:2.8rem;font-size:0.62rem;opacity:0.25;letter-spacing:0.14em}
+
+/* PAINT OVERLAY */
+#pov{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 45%,rgba(220,20,60,0.85) 0%,rgba(120,5,20,0.5) 40%,transparent 70%);
+  opacity:0;transition:opacity 1.3s ease;
+}
+#footer.xplode #pov{opacity:1}
+#drips{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.drip{
+  position:absolute;top:0;background:var(--cr);
+  border-radius:0 0 50% 50%;opacity:0;
+  animation:drip 2.2s ease-in forwards;
+}
+@keyframes drip{
+  0%{opacity:0.9;height:0;transform:scaleX(1)}
+  70%{opacity:0.8;height:120px}
+  100%{opacity:0.5;height:180px;transform:scaleX(0.6)}
+}
+.splat{
+  position:absolute;background:var(--cr);
+  transform:scale(0) translate(-50%,-50%);opacity:0;
+  animation:splat 0.6s ease-out forwards;
+}
+@keyframes splat{
+  0%{transform:scale(0) translate(-50%,-50%);opacity:1}
+  55%{transform:scale(1.25) translate(-38%,-38%);opacity:0.85}
+  100%{transform:scale(1) translate(-50%,-50%);opacity:0.55}
+}
+#sw{
+  position:absolute;top:50%;left:50%;
+  width:0;height:0;border:2.5px solid var(--cr);
+  border-radius:50%;transform:translate(-50%,-50%);
+  pointer-events:none;opacity:0;
+}
+#sw.boom{animation:sw 1.1s ease-out forwards}
+@keyframes sw{
+  0%{width:0;height:0;opacity:0.95}
+  100%{width:250vw;height:250vw;opacity:0}
+}
+.sectline{
+  position:absolute;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(220,20,60,0.25),transparent);
+}
+</style>
+</head>
+<body>
+
+<canvas id="c3d"></canvas>
+<div class="vig"></div>
+<div class="scan"></div>
+
+<div id="page">
+
+  <section id="hero" class="sec">
+    <div class="hero-hud">
+      MODEL X-7 CRIMSON SERIES<br>
+      CALIB: <span id="hud-x">0.000</span> / <span id="hud-y">0.000</span><br>
+      STATUS: <span id="hud-status">ARMED</span><br>
+      FPS: <span id="hud-fps">—</span>
+    </div>
+    <div class="hero-content">
+      <div class="eyebrow">EST. 2024 — PROFESSIONAL GRADE TACTICAL MARKER</div>
+      <h1 class="htitle">APEX<br>PAINTBALL</h1>
+      <div class="hsub">ENGINEERED FOR TOTAL DOMINANCE</div>
+      <div class="scroll-cue">
+        <span>SCROLL TO FIRE</span>
+        <div class="sline"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="s2" class="sec">
+    <div class="gpanel" id="p2">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="stats">
+        <div class="stat"><div class="num">0.2s</div><div class="lbl">REACTION TIME</div></div>
+        <div class="stat"><div class="num">300</div><div class="lbl">FPS MUZZLE VELOCITY</div></div>
+        <div class="stat"><div class="num">99%</div><div class="lbl">FIELD DOMINATION</div></div>
+      </div>
+      <h2 class="stitle">PRECISION<br>ENGINEERED</h2>
+      <p class="sbody">Every component machined to tolerance. Zero hesitation. Zero failure. The X-7 Crimson Series was built for those who demand absolute perfection when it matters most.</p>
+    </div>
+    <div class="sectline" style="top:0"></div>
+  </section>
+
+  <section id="s3" class="sec">
+    <div class="gpanel" id="p3">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <h2 class="stitle">DOMINATE<br>OUTLAST<br>CONQUER</h2>
+      <p class="sbody">The field belongs to those who strike first and strike true. Armed with crimson and forged in precision — leave nothing behind but your mark.</p>
+      <button class="ctabtn">ENTER THE FIELD →</button>
+    </div>
+    <div class="sectline" style="bottom:0"></div>
+  </section>
+
+  <footer id="footer">
+    <div class="fcontent">
+      <div class="flogo">APEX</div>
+      <p class="ftag">WHERE LEGENDS ARE FORGED</p>
+      <div class="flinks">
+        <a href="#" class="flink">EQUIPMENT</a>
+        <a href="#" class="flink">EVENTS</a>
+        <a href="#" class="flink">TEAM ROSTER</a>
+        <a href="#" class="flink">CONTACT</a>
+      </div>
+      <p class="fcopy">© 2024 APEX PAINTBALL. ALL RIGHTS RESERVED. CRIMSON SERIES.</p>
+    </div>
+    <div id="pov"></div>
+    <div id="drips"></div>
+    <div id="sw"></div>
+  </footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+const C = document.getElementById('c3d');
+const R = new THREE.WebGLRenderer({canvas:C,antialias:true,alpha:true});
+R.setSize(innerWidth,innerHeight);
+R.setPixelRatio(Math.min(devicePixelRatio,2));
+R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.15;
+R.outputEncoding=THREE.sRGBEncoding;
+
+const SC=new THREE.Scene();
+SC.fog=new THREE.FogExp2(0x030409,0.038);
+
+const CAM=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,0.1,200);
+CAM.position.set(4,3.2,7.5);CAM.lookAt(0,0.6,0);
+const CT={x:4,y:3.2,z:7.5};
+const CL={x:0,y:0.6,z:0};
+let ballCY=-0.4,ballTY=-0.4;
+
+// LIGHTS
+const aL=new THREE.AmbientLight(0x0A0C1C,1.8);SC.add(aL);
+const sunL=new THREE.DirectionalLight(0xB0C8FF,2.8);
+sunL.position.set(6,12,5);sunL.castShadow=true;SC.add(sunL);
+const crL=new THREE.PointLight(0xDC143C,4,12);crL.position.set(-3.5,1.5,3);SC.add(crL);
+const rimL=new THREE.DirectionalLight(0x223366,2.2);rimL.position.set(-5,-1,-6);SC.add(rimL);
+const botL=new THREE.PointLight(0x330008,2.5,10);botL.position.set(0,-4,2);SC.add(botL);
+const mFL=new THREE.PointLight(0xFF2244,0,8);SC.add(mFL);
+const xL=new THREE.PointLight(0xFF1030,0,22);SC.add(xL);
+
+// MATERIALS
+const mC=new THREE.MeshStandardMaterial({color:0x0B0B0F,metalness:0.15,roughness:0.88});
+const mM=new THREE.MeshStandardMaterial({color:0x22222E,metalness:0.96,roughness:0.06});
+const mDM=new THREE.MeshStandardMaterial({color:0x14141E,metalness:0.88,roughness:0.28});
+const mCR=new THREE.MeshStandardMaterial({color:0xDC143C,emissive:0xCC0028,emissiveIntensity:0.42,metalness:0.45,roughness:0.32});
+const mHP=new THREE.MeshStandardMaterial({color:0x0C0C16,metalness:0.12,roughness:0.58,transparent:true,opacity:0.94});
+const mGR=new THREE.MeshStandardMaterial({color:0x080808,metalness:0,roughness:1});
+
+const GG=new THREE.Group();
+GG.rotation.set(0.38,-0.28,0);GG.position.set(0.25,0.8,0);SC.add(GG);
+let TRG=null;
+
+function buildGun(){
+  const add=(g,m,p,r)=>{const o=new THREE.Mesh(g,m);if(p)o.position.set(...p);if(r)o.rotation.set(...r);GG.add(o);return o};
+  const addG=(g,m,p,s)=>{const o=new THREE.Mesh(g,m);if(p)o.position.set(...p);if(s)o.scale.set(...s);GG.add(o);return o};
+
+  // Receiver body
+  add(new THREE.BoxGeometry(0.52,0.21,1.85),mC,[0,0,0]);
+  add(new THREE.BoxGeometry(0.5,0.065,1.8),mDM,[0,0.138,0]);
+  // Side crimson plates
+  [-1,1].forEach(s=>{add(new THREE.BoxGeometry(0.018,0.14,1.48),mCR,[s*0.28,0,0.05])});
+
+  // Barrel
+  const brl=add(new THREE.CylinderGeometry(0.04,0.04,3.1,12),mM,[0,0.06,-2.4],[Math.PI/2,0,0]);brl.name='barrel';
+  // Shroud
+  add(new THREE.CylinderGeometry(0.092,0.092,1.55,12),mDM,[0,0.06,-2.22],[Math.PI/2,0,0]);
+  // Shroud rings
+  for(let i=0;i<8;i++) add(new THREE.TorusGeometry(0.093,0.008,5,12),[0,0.06,-1.5+i*0.2],[Math.PI/2,0,0]).material=mM;
+  // Muzzle
+  add(new THREE.CylinderGeometry(0.053,0.053,0.2,10),mM,[0,0.06,-3.92],[Math.PI/2,0,0]);
+  add(new THREE.TorusGeometry(0.055,0.012,6,12),mCR,[0,0.06,-4.02],[Math.PI/2,0,0]);
+
+  // Hopper neck + dome
+  add(new THREE.CylinderGeometry(0.118,0.118,0.42,12),mDM,[0,0.33,0.28]);
+  add(new THREE.TorusGeometry(0.122,0.013,6,12),mCR,[0,0.44,0.28],[Math.PI/2,0,0]);
+  const hp=addG(new THREE.SphereGeometry(0.46,22,18),mHP,[0,0.82,0.28],[1,0.8,1]);
+  add(new THREE.TorusGeometry(0.46,0.019,6,22),mCR,[0,0.82,0.28],[Math.PI/2,0,0]);
+  add(new THREE.CylinderGeometry(0.115,0.115,0.15,12),mDM,[0,1.18,0.28]);
+
+  // Trigger guard
+  add(new THREE.BoxGeometry(0.4,0.036,0.56),mDM,[0,-0.225,0.12]);
+  add(new THREE.BoxGeometry(0.4,0.3,0.036),mDM,[0,-0.1,-0.16]);
+  add(new THREE.BoxGeometry(0.4,0.3,0.036),mDM,[0,-0.1,0.4]);
+
+  // Trigger
+  TRG=add(new THREE.BoxGeometry(0.055,0.26,0.072),mM,[0,-0.1,0.12]);
+  TRG.rotation.z=0.16;TRG.name='trigger';
+
+  // Grip
+  add(new THREE.BoxGeometry(0.34,0.56,0.44),mGR,[0,-0.5,0.5]);
+  for(let i=0;i<5;i++) add(new THREE.BoxGeometry(0.36,0.022,0.46),mDM,[0,-0.28+i*0.1,0.5]);
+  add(new THREE.BoxGeometry(0.012,0.2,0.3),mCR,[-0.182,-0.48,0.5]);
+
+  // Regulator
+  add(new THREE.CylinderGeometry(0.078,0.068,0.9,10),mDM,[0,-0.18,0.9],[Math.PI/2,0,0]);
+  add(new THREE.TorusGeometry(0.082,0.012,6,12),mCR,[0,-0.18,0.56],[Math.PI/2,0,0]);
+  add(new THREE.CylinderGeometry(0.072,0.072,0.09,10),mM,[0,-0.18,1.38],[Math.PI/2,0,0]);
+
+  // Top rail
+  add(new THREE.BoxGeometry(0.105,0.058,1.75),mDM,[0,0.152,-0.12]);
+  for(let i=0;i<10;i++) add(new THREE.BoxGeometry(0.118,0.014,0.042),mM,[0,0.185,-0.92+i*0.18]);
+
+  // Backplate
+  add(new THREE.BoxGeometry(0.52,0.25,0.09),mC,[0,0,0.97]);
+  add(new THREE.BoxGeometry(0.5,0.056,0.11),mCR,[0,-0.1,0.99]);
+
+  // Barrel porting detail
+  for(let i=0;i<4;i++){
+    add(new THREE.CylinderGeometry(0.02,0.02,0.15,6),mM,[0.07,0.06,-1.5+i*0.3],[0,0,Math.PI/2]);
+    add(new THREE.CylinderGeometry(0.02,0.02,0.15,6),mM,[-0.07,0.06,-1.5+i*0.3],[0,0,Math.PI/2]);
+  }
+}
+buildGun();
+
+// Muzzle world position cache
+const MLOCAL=new THREE.Vector3(0,0.06,-4.02);
+
+// PAINTBALL
+const PBALL=new THREE.Mesh(
+  new THREE.SphereGeometry(0.15,22,18),
+  new THREE.MeshStandardMaterial({color:0xDC143C,emissive:0xCC0020,emissiveIntensity:0.55,metalness:0.05,roughness:0.32})
+);
+PBALL.visible=false;SC.add(PBALL);
+const PBL=new THREE.PointLight(0xFF1040,0,5);SC.add(PBL);
+
+// TRAIL PARTICLES
+const TN=55,TRAIL=[];
+const tGeo=new THREE.SphereGeometry(0.038,6,6);
+for(let i=0;i<TN;i++){
+  const m=new THREE.Mesh(tGeo,new THREE.MeshStandardMaterial({
+    color:0xDC143C,emissive:0xFF0030,emissiveIntensity:1,transparent:true,opacity:0
+  }));
+  m.visible=false;SC.add(m);
+  TRAIL.push({m,life:0,ml:0.4+Math.random()*0.5});
+}
+let TI=0;
+
+// SMOKE PARTICLES
+const SN=28,SMOKE=[];
+const sGeo=new THREE.SphereGeometry(0.08,5,5);
+for(let i=0;i<SN;i++){
+  const m=new THREE.Mesh(sGeo,new THREE.MeshBasicMaterial({color:0x5577AA,transparent:true,opacity:0}));
+  m.visible=false;SC.add(m);
+  SMOKE.push({m,life:0,active:false,vel:new THREE.Vector3()});
+}
+
+// FOG PARTICLES (ambient)
+const FN=75,FOG=[];
+const fGeo=new THREE.SphereGeometry(0.06,4,4);
+for(let i=0;i<FN;i++){
+  const isCR=Math.random()<0.18;
+  const m=new THREE.Mesh(fGeo,new THREE.MeshBasicMaterial({
+    color:isCR?0x330008:0x182030,transparent:true,opacity:0.05+Math.random()*0.12
+  }));
+  m.scale.setScalar(0.25+Math.random()*1.8);
+  m.position.set((Math.random()-0.5)*12,(Math.random()-0.5)*7,(Math.random()-0.5)*7);
+  m.userData.v=new THREE.Vector3((Math.random()-0.5)*0.003,Math.random()*0.0042-0.001,(Math.random()-0.5)*0.003);
+  SC.add(m);FOG.push(m);
+}
+
+// EXPLOSION PARTICLES
+const XN=90,XPARTS=[];
+const xGeo=new THREE.SphereGeometry(0.07,6,6);
+for(let i=0;i<XN;i++){
+  const big=Math.random()<0.25;
+  const m=new THREE.Mesh(
+    big?new THREE.SphereGeometry(0.18,8,8):xGeo,
+    new THREE.MeshStandardMaterial({color:0xDC143C,emissive:0xFF0030,emissiveIntensity:1.1,transparent:true,opacity:0})
+  );
+  m.visible=false;SC.add(m);
+  XPARTS.push({m,life:0,active:false,vel:new THREE.Vector3(),grav:0.003+Math.random()*0.005});
+}
+
+// STATE
+let STATE='idle',scrollP=0,lastSY=0,scrollV=0;
+let fired=false,xploded=false,gunFading=false,gunVis=true,gunOp=1;
+let idleT=0;
+const YSTART=-0.4,YEND=-17;
+
+// GUN OPACITY
+function setGO(op){
+  gunOp=op;
+  GG.traverse(c=>{if(c.isMesh&&c.material){c.material.transparent=true;c.material.opacity=op}});
+}
+
+// FIRE
+function fire(){
+  if(fired)return;fired=true;STATE='fired';
+  document.getElementById('hud-status').textContent='FIRED';
+
+  // Recoil
+  gsap.to(GG.position,{z:0.65,duration:0.07,ease:'power4.out',
+    onComplete:()=>gsap.to(GG.position,{z:0,duration:0.6,ease:'elastic.out(1,0.38)'})});
+  gsap.to(GG.rotation,{x:GG.rotation.x-0.22,duration:0.06,ease:'power4.out',
+    onComplete:()=>gsap.to(GG.rotation,{x:0.38,duration:0.65,ease:'elastic.out(1,0.35)'})});
+
+  // Camera shake
+  const ox=CT.x,oy=CT.y;
+  gsap.to(CT,{x:ox+0.22,y:oy+0.18,duration:0.06,
+    onComplete:()=>gsap.to(CT,{x:ox,y:oy,duration:0.55,ease:'elastic.out(1,0.4)'})});
+
+  // Muzzle flash
+  const mp=MLOCAL.clone();GG.localToWorld(mp);
+  mFL.position.copy(mp);mFL.intensity=16;
+  gsap.to(mFL,{intensity:0,duration:0.28,ease:'power3.out'});
+
+  // Smoke burst
+  let sc=0;
+  SMOKE.forEach(p=>{
+    if(!p.active&&sc<14){
+      p.m.position.copy(mp);p.m.visible=true;
+      p.m.material.opacity=0.38;p.life=1;p.active=true;
+      p.vel.set((Math.random()-0.5)*0.05,Math.random()*0.06,(Math.random()-0.5)*0.05-0.04);
+      sc++;
+    }
+  });
+
+  // Show paintball
+  PBALL.visible=true;PBALL.material.opacity=1;PBALL.material.transparent=false;
+  PBALL.position.copy(mp);
+  ballCY=mp.y;ballTY=mp.y;
+  PBL.intensity=4;
+
+  setTimeout(()=>STATE='traveling',240);
+}
+
+// TRAIL SPAWN
+function spawnT(pos){
+  const t=TRAIL[TI%TN];TI++;
+  t.m.position.copy(pos);
+  t.m.position.x+=(Math.random()-0.5)*0.1;
+  t.m.position.z+=(Math.random()-0.5)*0.1;
+  t.m.visible=true;t.m.material.opacity=0.85;t.life=t.ml;
+}
+
+// EXPLOSION
+function explode(){
+  xploded=true;STATE='xploded';
+  document.getElementById('hud-status').textContent='IMPACT';
+
+  const ep=PBALL.position.clone();
+  XPARTS.forEach(p=>{
+    const a=Math.random()*Math.PI*2,el=(Math.random()-0.25)*Math.PI*0.55;
+    const spd=0.07+Math.random()*0.28;
+    p.vel.set(Math.cos(a)*Math.cos(el)*spd,Math.sin(el)*spd+0.06,Math.sin(a)*Math.cos(el)*spd);
+    p.m.position.copy(ep);p.m.visible=true;p.m.material.opacity=1;p.life=1;p.active=true;
+  });
+
+  xL.position.copy(ep);xL.intensity=30;
+  gsap.to(xL,{intensity:0,duration:2.2,ease:'power2.out'});
+
+  // Camera big shake + pull back
+  gsap.to(CT,{x:CT.x+0.45,y:CT.y+0.35,duration:0.08,
+    onComplete:()=>gsap.to(CT,{x:4,y:ballCY+2.5,z:10,duration:1,ease:'elastic.out(1,0.32)'})});
+
+  gsap.to(PBALL.material,{opacity:0,duration:0.32,ease:'power2.out'});
+  PBALL.material.transparent=true;
+  gsap.to(PBL,{intensity:0,duration:0.5});
+
+  // DOM effects
+  const foot=document.getElementById('footer');
+  foot.classList.add('xplode');
+  document.getElementById('sw').classList.add('boom');
+
+  setTimeout(()=>{
+    for(let i=0;i<24;i++){
+      setTimeout(()=>{
+        const d=document.createElement('div');
+        d.className='drip';
+        d.style.left=Math.random()*100+'%';
+        d.style.width=(3+Math.random()*14)+'px';
+        d.style.top=(5+Math.random()*25)+'%';
+        d.style.animationDelay=(Math.random()*0.4)+'s';
+        d.style.animationDuration=(1.4+Math.random()*2.2)+'s';
+        document.getElementById('drips').appendChild(d);
+      },i*70);
+    }
+    for(let i=0;i<20;i++){
+      setTimeout(()=>{
+        const s=document.createElement('div');
+        s.className='splat';
+        const sz=15+Math.random()*100;
+        s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;
+          border-radius:${35+Math.random()*30}% ${50+Math.random()*20}% ${40+Math.random()*25}% ${45+Math.random()*20}%/
+          ${45+Math.random()*20}% ${35+Math.random()*25}% ${50+Math.random()*20}% ${40+Math.random()*20}%;
+          opacity:${0.35+Math.random()*0.5};`;
+        document.getElementById('footer').appendChild(s);
+      },i*55);
+    }
+  },100);
+}
+
+// SCROLL
+window.addEventListener('scroll',()=>{
+  const mx=document.body.scrollHeight-innerHeight;
+  scrollP=Math.min(1,scrollY/mx);
+  scrollV=Math.abs(scrollY-lastSY);lastSY=scrollY;
+  if(!fired&&scrollY>8) fire();
+},{passive:true});
+
+// SECTION REVEAL
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')});
+},{threshold:0.2});
+document.querySelectorAll('.gpanel').forEach(el=>obs.observe(el));
+
+// HUD
+document.addEventListener('mousemove',e=>{
+  document.getElementById('hud-x').textContent=(e.clientX/innerWidth*10-5).toFixed(3);
+  document.getElementById('hud-y').textContent=(e.clientY/innerHeight*10-5).toFixed(3);
+});
+
+// RESIZE
+window.addEventListener('resize',()=>{
+  CAM.aspect=innerWidth/innerHeight;CAM.updateProjectionMatrix();
+  R.setSize(innerWidth,innerHeight);
+});
+
+// ANIMATION LOOP
+const CLK=new THREE.Clock();
+let fps=0,fpsAcc=0,fpsCount=0;
+
+function tick(){
+  requestAnimationFrame(tick);
+  const dt=CLK.getDelta();idleT+=dt;
+  scrollV*=0.86;
+
+  // FPS counter
+  fpsAcc+=dt;fpsCount++;
+  if(fpsAcc>=0.5){fps=Math.round(fpsCount/fpsAcc);fpsAcc=0;fpsCount=0;
+    document.getElementById('hud-fps').textContent=fps;}
+
+  // IDLE ANIMATIONS
+  if(STATE==='idle'||STATE==='fired'){
+    GG.position.y=0.8+Math.sin(idleT*0.72)*0.09;
+    GG.rotation.z=Math.sin(idleT*0.44)*0.013;
+    crL.intensity=3.8+Math.sin(idleT*1.9)*1.1;
+    if(TRG) TRG.rotation.z=0.16+Math.sin(idleT*3.8)*0.026;
+    // Tiny breathing on hopper
+  }
+
+  // TRAVELING
+  if(STATE==='traveling'){
+    const spd=1+scrollV*0.07;
+    ballTY=THREE.MathUtils.lerp(YSTART,YEND,scrollP);
+    ballCY+=(ballTY-ballCY)*Math.min(1,0.11*spd);
+
+    PBALL.position.y=ballCY;
+    PBALL.position.x=0.25+Math.sin(idleT*2.2)*0.045;
+    PBALL.position.z=THREE.MathUtils.lerp(0,-4.5,scrollP);
+
+    PBALL.rotation.x+=0.07*spd;PBALL.rotation.z+=0.045*spd;
+
+    const str=1+Math.min(1.5,scrollV*0.03);
+    PBALL.scale.set(1/Math.sqrt(str),str,1/Math.sqrt(str));
+
+    PBL.position.copy(PBALL.position);
+    PBL.intensity=3.5+Math.min(6,scrollV*0.12);
+
+    if(Math.random()<0.58) spawnT(PBALL.position.clone());
+
+    // Camera follows
+    CT.y+=(ballCY+2.2-CT.y)*0.04;
+    CL.y=ballCY+0.4;
+
+    // Crimson light pulses during travel
+    crL.intensity=2.5+Math.sin(idleT*3)*0.5+scrollV*0.08;
+
+    // Gun fade mid-scroll
+    if(scrollP>0.14&&!gunFading){
+      gunFading=true;
+      const fo={op:1};
+      gsap.to(fo,{op:0,duration:2.2,ease:'power2.inOut',
+        onUpdate:()=>setGO(fo.op),
+        onComplete:()=>{GG.visible=false;gunVis=false;}});
+    }
+
+    if(scrollP>0.92&&!xploded) explode();
+  }
+
+  if(STATE==='xploded'){
+    CT.z+=(11-CT.z)*0.008;
+  }
+
+  // UPDATE TRAIL
+  TRAIL.forEach(t=>{
+    if(t.life>0){
+      t.life-=dt*2.8;
+      t.m.material.opacity=Math.max(0,(t.life/t.ml)*0.72);
+      if(t.life<=0){t.m.visible=false;}
+    }
+  });
+
+  // UPDATE SMOKE
+  SMOKE.forEach(p=>{
+    if(p.active){
+      p.life-=dt*1.05;
+      p.m.position.add(p.vel);p.vel.multiplyScalar(0.95);
+      p.m.scale.setScalar(1+(1-p.life)*3.5);
+      p.m.material.opacity=Math.max(0,p.life*0.34);
+      if(p.life<=0){p.active=false;p.m.visible=false;}
+    }
+  });
+
+  // UPDATE EXPLOSION PARTS
+  XPARTS.forEach(p=>{
+    if(p.active){
+      p.life-=dt*0.55;
+      p.m.position.add(p.vel);p.vel.y-=p.grav;
+      p.m.material.opacity=Math.max(0,p.life*0.92);
+      p.m.rotation.x+=0.06;p.m.rotation.z+=0.04;
+      if(p.life<=0){p.active=false;p.m.visible=false;}
+    }
+  });
+
+  // UPDATE FOG — follow camera Y
+  FOG.forEach(f=>{
+    f.position.add(f.userData.v);
+    if(f.position.y>CAM.position.y+6) f.position.y=CAM.position.y-6;
+    if(f.position.y<CAM.position.y-9) f.position.y=CAM.position.y+5;
+    if(f.position.x>8) f.position.x=-8;
+    if(f.position.x<-8) f.position.x=8;
+  });
+
+  // SMOOTH CAMERA
+  CAM.position.x+=(CT.x-CAM.position.x)*0.055;
+  CAM.position.y+=(CT.y-CAM.position.y)*0.055;
+  CAM.position.z+=(CT.z-CAM.position.z)*0.055;
+  CAM.lookAt(CL.x,CL.y,CL.z);
+
+  R.render(SC,CAM);
+}
+tick();
+</script>
+</body>
+</html>
